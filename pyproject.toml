@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "shipproof"
+version = "0.1.0"
+description = "Prove a deploy actually landed. Don't take the agent's word for it."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.9"
+keywords = ["deploy", "verification", "ci", "ai-agents", "claude-code", "rollback"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Topic :: Software Development :: Quality Assurance",
+  "Topic :: System :: Monitoring",
+]
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/Hurshid87/shipproof"
+Source = "https://github.com/Hurshid87/shipproof"
+Issues = "https://github.com/Hurshid87/shipproof/issues"
+
+[project.scripts]
+shipproof = "shipproof.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["shipproof*"]

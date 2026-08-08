@@ -1,0 +1,44 @@
+# Публикация на PyPI одной кнопкой в браузере — без терминала на компьютере.
+#
+# Как пользоваться:
+#   1. В репозитории: Settings → Secrets and variables → Actions → New secret
+#      Name: PYPI_API_TOKEN     Value: токен pypi-AgEI…
+#   2. Releases → Create a new release → Tag: v0.1.0 → Publish release
+#   3. Вкладка Actions покажет сборку. Зелёная галочка = пакет на PyPI.
+#
+# Почему сначала тесты: выложенную версию на PyPI НЕЛЬЗЯ перезалить — номер
+# сгорает навсегда. Пакет, который не проходит собственные тесты, выкладывать
+# нельзя тем более: инструмент, который врёт про деплой, хуже отсутствия
+# инструмента.
+name: publish
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:        # кнопка «Run workflow» для ручного запуска
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Тесты — гейт перед публикацией
+        run: python -m pytest tests -q
+
+      - name: Сборка пакета
+        run: |
+          python -m pip install --upgrade build
+          python -m build
+
+      - name: Загрузка на PyPI
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+        run: |
+          python -m pip install --upgrade twine
+          python -m twine upload dist/*

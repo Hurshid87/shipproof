@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.shipproof.json
+dist/
+build/
+*.egg-info/
+.pytest_cache/
