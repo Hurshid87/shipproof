@@ -1,21 +1,29 @@
-# Публикация на PyPI одной кнопкой в браузере — без терминала на компьютере.
+# Публикация на PyPI без токена — Trusted Publishing (OIDC).
 #
-# Как пользоваться:
-#   1. В репозитории: Settings → Secrets and variables → Actions → New secret
-#      Name: PYPI_API_TOKEN     Value: токен pypi-AgEI…
-#   2. Releases → Create a new release → Tag: v0.1.0 → Publish release
-#   3. Вкладка Actions покажет сборку. Зелёная галочка = пакет на PyPI.
+# PyPI сам проверяет, что сборка пришла ИМЕННО из этого репозитория и именно
+# из этого файла workflow, и выдаёт одноразовый пропуск на одну загрузку.
+# Токена не существует: нечего скопировать, нечего потерять, нечего украсть.
+# Это ровно та же логика, что и во всём проекте — доказательство вместо
+# обещания.
 #
-# Почему сначала тесты: выложенную версию на PyPI НЕЛЬЗЯ перезалить — номер
-# сгорает навсегда. Пакет, который не проходит собственные тесты, выкладывать
-# нельзя тем более: инструмент, который врёт про деплой, хуже отсутствия
-# инструмента.
+# Что нужно один раз сделать на pypi.org (меню слева → Publishing):
+#   PyPI Project Name: shipproof
+#   Owner:             Hurshid87
+#   Repository name:   shipproof
+#   Workflow name:     publish.yml
+#   Environment name:  оставить пустым
+#
+# Дальше: Releases → Create a new release → тег v0.1.0 → Publish release.
 name: publish
 
 on:
   release:
     types: [published]
   workflow_dispatch:        # кнопка «Run workflow» для ручного запуска
+
+permissions:
+  contents: read
+  id-token: write           # без этого PyPI не сможет проверить, кто пришёл
 
 jobs:
   publish:
@@ -27,7 +35,9 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Тесты — гейт перед публикацией
+      # Гейт ДО отправки: номер версии на PyPI нельзя перезалить, он сгорает
+      # навсегда. Инструмент, который врёт про деплой, выкладывать нельзя.
+      - name: Тесты
         run: python -m pytest tests -q
 
       - name: Сборка пакета
@@ -36,9 +46,4 @@ jobs:
           python -m build
 
       - name: Загрузка на PyPI
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
-        run: |
-          python -m pip install --upgrade twine
-          python -m twine upload dist/*
+        uses: pypa/gh-action-pypi-publish@release/v1
