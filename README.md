@@ -1,6 +1,15 @@
 # shipproof
 
+[![PyPI](https://img.shields.io/pypi/v/shipproof)](https://pypi.org/project/shipproof/)
+[![Python](https://img.shields.io/pypi/pyversions/shipproof)](https://pypi.org/project/shipproof/)
+[![License](https://img.shields.io/badge/license-MIT-blue)](LICENSE)
+[![Tests](https://github.com/Hurshid87/shipproof/actions/workflows/test.yml/badge.svg)](https://github.com/Hurshid87/shipproof/actions/workflows/test.yml)
+
 **Your agent said "deployed". Prove it.**
+
+```bash
+pip install shipproof
+```
 
 AI coding agents report success the moment a command exits 0. That is not the
 same as your users getting the new build. The old version can still be serving.
